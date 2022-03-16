@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace JwtWebApiTutorial.Migrations
+namespace LoginAndAuthAPI.Migrations
 {
     [DbContext(typeof(Datacontext))]
     [Migration("20220302173019_InitialCreate")]

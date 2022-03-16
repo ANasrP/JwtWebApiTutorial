@@ -22,7 +22,7 @@ namespace LoginAndAuthAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("JwtWebApiTutorial.User", b =>
+            modelBuilder.Entity("LoginAndAuthAPI.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,7 +54,7 @@ namespace LoginAndAuthAPI.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("JwtWebApiTutorial.UserDto", b =>
+            modelBuilder.Entity("LoginAndAuthAPI.UserDto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

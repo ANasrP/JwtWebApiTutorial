@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "JwtWebApiTutorial": {
+    "LoginAndAuthAPI": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
