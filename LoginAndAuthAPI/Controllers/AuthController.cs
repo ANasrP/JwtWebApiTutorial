@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using LoginAndAuthAPI;
+using LoginAndAuthAPI.Data;
+using LoginAndAuthAPI.Services.UserService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -6,20 +9,22 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 
-namespace JwtWebApiTutorial.Controllers
+namespace LoginAndAuthAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        public static User user = new User();
+        private readonly Datacontext _context;
+        //public static User user = new User();
         private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
 
-        public AuthController(IConfiguration configuration, IUserService userService)
+        public AuthController(IConfiguration configuration, IUserService userService, Datacontext context)
         {
             _configuration = configuration;
             _userService = userService;
+            _context = context;
         }
 
         [HttpGet, Authorize]
@@ -39,19 +44,27 @@ namespace JwtWebApiTutorial.Controllers
         {
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            user.Username = request.Username;
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            User user = new User
+            {
+                Username = request.Username,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt
+            };
 
-            return Ok(user);
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+
+            return Ok();
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserDto request)
         {
-            if (user.Username != request.Username)
+            User user = _context.Users.Where(user => user.Username == request.Username).FirstOrDefault();
+            if(user == null)
             {
-                return BadRequest("User not found.");
+                return NotFound();
             }
 
             if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
@@ -61,6 +74,7 @@ namespace JwtWebApiTutorial.Controllers
 
             string token = CreateToken(user);
             return Ok(token);
+            
         }
 
         private string CreateToken(User user)
@@ -68,7 +82,7 @@ namespace JwtWebApiTutorial.Controllers
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, "Admin")
+                new Claim(ClaimTypes.Role, ((int)user.Role).ToString())
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(

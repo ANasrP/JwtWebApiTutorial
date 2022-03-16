@@ -1,4 +1,4 @@
-﻿namespace JwtWebApiTutorial.Services.UserService
+﻿namespace LoginAndAuthAPI.Services.UserService
 {
     public interface IUserService
     {

@@ -1,4 +1,4 @@
-namespace JwtWebApiTutorial
+namespace LoginAndAuthAPI
 {
     public class WeatherForecast
     {
